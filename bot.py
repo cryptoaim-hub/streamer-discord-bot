@@ -3,7 +3,17 @@ from discord.ext import commands
 import requests
 import os
 
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+# Token laden - erst aus Umgebung, dann aus Datei
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", "")
+if not DISCORD_TOKEN:
+    try:
+        with open("/etc/secrets/DISCORD_TOKEN") as f:
+            DISCORD_TOKEN = f.read().strip()
+    except:
+        pass
+
+print("Token geladen:", "Ja" if DISCORD_TOKEN else "NEIN - FEHLER!")
+
 HF_API_URL = "https://cryptoaim-streamer-discord-bot.hf.space/api/predict"
 
 intents = discord.Intents.default()
@@ -14,7 +24,7 @@ channel_history = {}
 
 @bot.event
 async def on_ready():
-    print(f"✅ Bot online als {bot.user}")
+    print(f"Bot online als {bot.user}")
 
 @bot.event
 async def on_message(message):
